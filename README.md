@@ -14,5 +14,5 @@ Rate your newly-listened or favorite album/track and write a review about it!
 - **State Management:** Zustand, TanStack Query
 - **Client:** Expo, React Native Paper, React Hook Form
 - **Server:** Node, disconnect (Discogs API), Spotify API, PocketBase
-- **Utils**: Immer
+- **Utils**: Immer, Lodash
 
