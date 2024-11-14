@@ -1,18 +1,52 @@
+import React, { useCallback, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import {
+  FlatList,
+  Pressable,
+  RefreshControl,
+  StyleSheet,
+  View,
+} from "react-native";
+import {
+  ActivityIndicator,
+  Banner,
+  Icon,
+  Searchbar,
+  Text,
+  useTheme,
+} from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "expo-router";
+import * as NavigationBar from "expo-navigation-bar";
+
 import useAuthStore from "@/stores/useAuthStore";
 import useReleasesStore from "@/stores/useReleasesStore";
-import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
-import { Banner, Icon, Searchbar, Text, useTheme } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
+import MusicCard from "@/components/MusicCard";
 
 export default function Index() {
   const theme = useTheme();
 
   const [bannerVisibility, setBannerVisibility] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
 
   const { isLoggedIn } = useAuthStore();
-  const {} = useReleasesStore();
+  const { CACHE_KEY, getNewAlbumReleases } = useReleasesStore();
+
+  const { isPending, data, error, isFetching, isRefetching, refetch } =
+    useQuery({
+      queryKey: ["new-releases"],
+      queryFn: getNewAlbumReleases,
+    });
+
+  useFocusEffect(
+    useCallback(() => {
+      if (theme.dark) {
+        NavigationBar.setBackgroundColorAsync(theme.colors.elevation.level2);
+      } else {
+        NavigationBar.setBackgroundColorAsync(theme.colors.elevation.level1);
+      }
+    }, [theme.dark])
+  );
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -35,11 +69,6 @@ export default function Index() {
             />
           </Pressable>
         </View>
-        <Searchbar
-          placeholder="Search"
-          onChangeText={setSearchQuery}
-          value={searchQuery}
-        />
         {isLoggedIn ? null : (
           <Banner
             visible={bannerVisibility}
@@ -67,10 +96,42 @@ export default function Index() {
           </Banner>
         )}
       </View>
-      <ScrollView
-        contentContainerStyle={{ gap: 16 }}
-        showsVerticalScrollIndicator={false}
-      ></ScrollView>
+      {!isFetching ? (
+        <>
+          <FlatList
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefetching}
+                onRefresh={async () => {
+                  await AsyncStorage.removeItem(CACHE_KEY);
+                  refetch();
+                }}
+              />
+            }
+            data={data?.albumData.albums.items || []}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <MusicCard
+                image_url={item.images[0].url}
+                title={item.name}
+                description={item.artists[0].name}
+              />
+            )}
+            ListEmptyComponent={<Text>No data available</Text>}
+            contentContainerStyle={{ gap: 8 }}
+          />
+        </>
+      ) : (
+        <View
+          style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <ActivityIndicator size={48} color={theme.colors.primary} />
+        </View>
+      )}
     </SafeAreaView>
   );
 }

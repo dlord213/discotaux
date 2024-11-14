@@ -118,11 +118,11 @@ export default function RootLayout() {
               }}
             />
             <Tabs.Screen
-              name="genres"
+              name="search"
               options={{
-                title: "Genres",
+                title: "Search",
                 tabBarIcon: ({ size }) => (
-                  <Icon source="tag-multiple-outline" size={size} />
+                  <Icon source="account-search" size={size} />
                 ),
               }}
             />

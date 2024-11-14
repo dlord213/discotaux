@@ -42,9 +42,16 @@ export default function Page() {
   }, [page]);
 
   if (isAuthing) {
-    <SafeAreaView style={styles.safeAreaView}>
-      <ActivityIndicator color={theme.colors.primary} />
-    </SafeAreaView>;
+    return (
+      <SafeAreaView
+        style={[
+          styles.safeAreaView,
+          { alignItems: "center", justifyContent: "center" },
+        ]}
+      >
+        <ActivityIndicator color={theme.colors.primary} size={48} />
+      </SafeAreaView>
+    );
   }
 
   if (!isLoggedIn && !isAuthing) {
@@ -86,6 +93,8 @@ export default function Page() {
               onChangeText={setEmailAddress}
               mode="outlined"
               label="Email address"
+              enterKeyHint="go"
+              onSubmitEditing={handleLogin}
             />
             <TextInput
               value={form.password}
@@ -93,6 +102,8 @@ export default function Page() {
               mode="outlined"
               label="Password"
               secureTextEntry
+              enterKeyHint="go"
+              onSubmitEditing={handleLogin}
             />
             <Button mode="contained" onPress={handleLogin}>
               Login
@@ -116,20 +127,26 @@ export default function Page() {
               value={form.username}
               onChangeText={setUsername}
               mode="outlined"
+              enterKeyHint="go"
               label="Username"
+              onSubmitEditing={handleRegister}
             />
             <TextInput
               value={form.emailAddress}
               onChangeText={setEmailAddress}
               mode="outlined"
+              enterKeyHint="go"
               label="Email address"
+              onSubmitEditing={handleRegister}
             />
             <TextInput
               value={form.password}
               onChangeText={setPassword}
               mode="outlined"
               label="Password"
+              enterKeyHint="go"
               secureTextEntry
+              onSubmitEditing={handleRegister}
             />
             <Button mode="contained" onPress={handleRegister}>
               Register

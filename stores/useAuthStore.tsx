@@ -123,6 +123,7 @@ const useAuthStore = create<AuthStoreInterface>()(
       return true;
     },
     handleLogin: async () => {
+      set({ isAuthing: true });
       let validated = get().handleValidation();
       if (validated) {
         try {
@@ -148,6 +149,7 @@ const useAuthStore = create<AuthStoreInterface>()(
       const validation = get().handleValidation();
 
       if (validation) {
+        set({ isAuthing: true });
         try {
           const registrationData = await get()
             .client_instance.collection("users")
@@ -170,12 +172,9 @@ const useAuthStore = create<AuthStoreInterface>()(
           set({ isAuthing: false, isLoggedIn: false });
           get().clearForm();
 
-          ToastAndroid.show(
-            `Register failed: ${
-              error.details || error.message || "Unknown error occurred"
-            }`,
-            ToastAndroid.LONG
-          );
+          if (error) {
+            ToastAndroid.show(`Register failed: ${error}`, ToastAndroid.LONG);
+          }
         }
       }
     },

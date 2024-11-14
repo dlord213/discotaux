@@ -1,33 +1,28 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { FlatList, Pressable, StyleSheet, View } from "react-native";
-import {
-  ActivityIndicator,
-  Chip,
-  Icon,
-  Text,
-  useTheme,
-} from "react-native-paper";
+import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Chip, Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import useChartsStore from "@/stores/useChartsStore";
 import MusicCard from "@/components/MusicCard";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Page() {
   const theme = useTheme();
 
-  const [titleString, setTitleString] = useState<string>("Top albums");
-  const [chipSelected, setChipSelected] = useState(0);
+  const [titleString, setTitleString] = useState<string>("Top tracks");
+  const [chipSelected, setChipSelected] = useState(1);
 
-  const { getTopTracks } = useChartsStore();
+  const { getTopTracks, CACHE_KEY } = useChartsStore();
 
-  const { isPending, data, error } = useQuery({
-    queryKey: ["top-tracks"],
-    queryFn: getTopTracks,
-    refetchIntervalInBackground: false,
-    enabled: true,
-  });
+  const { isPending, data, error, isFetching, isRefetching, refetch } =
+    useQuery({
+      queryKey: ["top-tracks"],
+      queryFn: getTopTracks,
+      enabled: true,
+    });
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -41,13 +36,11 @@ export default function Page() {
         <Text variant="headlineLarge" style={{ fontWeight: "bold" }}>
           {titleString}
         </Text>
-        <Pressable>
-          <Icon source="calendar-search" size={24} />
-        </Pressable>
       </View>
       <View style={{ flexDirection: "row", gap: 8 }}>
         <Chip
           mode={chipSelected == 0 ? "flat" : "outlined"}
+          style={{ display: "none" }}
           onPress={() => {
             setChipSelected(0);
             setTitleString("Top albums");
@@ -69,8 +62,17 @@ export default function Page() {
         <></>
       ) : (
         <>
-          {!isPending ? (
+          {!isFetching ? (
             <FlatList
+              refreshControl={
+                <RefreshControl
+                  refreshing={isRefetching}
+                  onRefresh={async () => {
+                    await AsyncStorage.removeItem(CACHE_KEY);
+                    refetch();
+                  }}
+                />
+              }
               data={data || []}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => (

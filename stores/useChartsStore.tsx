@@ -4,9 +4,7 @@ import axios, { AxiosResponse } from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface ChartsStoreInterface {
-  trackList: any[];
-  isFetching: true;
-  errorMessage?: string | unknown;
+  CACHE_KEY: string;
   getTopTracks: () => Promise<
     | {
         trackName: any;
@@ -19,8 +17,7 @@ interface ChartsStoreInterface {
 
 const useChartsStore = create<ChartsStoreInterface>()(
   immer((set, get) => ({
-    trackList: [],
-    isFetching: true,
+    CACHE_KEY: "@chart-tracks-data",
     errorMessage: "",
     getTopTracks: async () => {
       const api_key = process.env.EXPO_PUBLIC_LAST_FM_API_KEY;
@@ -30,9 +27,7 @@ const useChartsStore = create<ChartsStoreInterface>()(
       const trackDetails = [];
 
       try {
-        const cachedTrackData = await AsyncStorage.getItem(
-          "@chart-tracks-data"
-        );
+        const cachedTrackData = await AsyncStorage.getItem(get().CACHE_KEY);
         if (cachedTrackData) {
           const parsedCachedTrackData = JSON.parse(cachedTrackData);
 
