@@ -3,12 +3,13 @@ import axios from "axios";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
-import { CachedSpotifyDataInterface } from "@/types/SpotifyAPITypes";
+import { SpotifyAlbumDataInterface } from "@/types/SpotifyAPITypes";
 
 interface ReleasesStoreInterface {
   CACHE_KEY: string;
   SPOTIFY_TOKEN_KEY: string;
-  getNewAlbumReleases: () => Promise<CachedSpotifyDataInterface | undefined>;
+  SPOTIFY_TOKEN: string;
+  getNewAlbumReleases: () => Promise<SpotifyAlbumDataInterface | undefined>;
   getSpotifyAccessToken: () => Promise<string>;
 }
 
@@ -16,6 +17,7 @@ const useReleasesStore = create<ReleasesStoreInterface>()(
   immer((set, get) => ({
     CACHE_KEY: "@releases-albums-data",
     SPOTIFY_TOKEN_KEY: "@spotify-token-key",
+    SPOTIFY_TOKEN: "",
     getNewAlbumReleases: async () => {
       const access_token = await get().getSpotifyAccessToken();
 
@@ -23,7 +25,7 @@ const useReleasesStore = create<ReleasesStoreInterface>()(
         try {
           const cachedAlbumData = await AsyncStorage.getItem(get().CACHE_KEY);
           if (cachedAlbumData) {
-            const parsedCachedAlbumData: CachedSpotifyDataInterface =
+            const parsedCachedAlbumData: SpotifyAlbumDataInterface =
               JSON.parse(cachedAlbumData);
 
             return parsedCachedAlbumData;
@@ -34,14 +36,14 @@ const useReleasesStore = create<ReleasesStoreInterface>()(
 
         try {
           const response = await axios.get<
-            CachedSpotifyDataInterface["albumData"]
+            SpotifyAlbumDataInterface["albumData"]
           >("https://api.spotify.com/v1/browse/new-releases?limit=50", {
             headers: {
               Authorization: "Bearer " + access_token,
             },
           });
 
-          const cachedAlbumData: CachedSpotifyDataInterface = {
+          const cachedAlbumData: SpotifyAlbumDataInterface = {
             albumData: response.data,
             lastUpdated: new Date().toLocaleDateString(),
           };
@@ -50,6 +52,8 @@ const useReleasesStore = create<ReleasesStoreInterface>()(
             "@releases-albums-data",
             JSON.stringify(cachedAlbumData)
           );
+
+          console.log(cachedAlbumData);
 
           return cachedAlbumData;
         } catch (err) {
@@ -97,11 +101,14 @@ const useReleasesStore = create<ReleasesStoreInterface>()(
               })
             );
 
+            set({ SPOTIFY_TOKEN: spotifyData.data["access_token"] });
+
             return spotifyData.data["access_token"];
           } catch (err) {
             console.log("Error:", err);
           }
         } else {
+          set({ SPOTIFY_TOKEN: access_token });
           return access_token;
         }
       } else {
@@ -129,6 +136,8 @@ const useReleasesStore = create<ReleasesStoreInterface>()(
               timestamp: new Date().toISOString(),
             })
           );
+
+          set({ SPOTIFY_TOKEN: spotifyData.data["access_token"] });
 
           return spotifyData.data["access_token"];
         } catch (err) {
