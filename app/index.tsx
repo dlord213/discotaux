@@ -1,19 +1,8 @@
+import useAuthStore from "@/stores/useAuthStore";
+import useReleasesStore from "@/stores/useReleasesStore";
 import { useState } from "react";
-import {
-  Image,
-  Pressable,
-  StyleSheet,
-  useWindowDimensions,
-  View,
-} from "react-native";
-import {
-  Banner,
-  Card,
-  Icon,
-  Searchbar,
-  Text,
-  useTheme,
-} from "react-native-paper";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Banner, Icon, Searchbar, Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
@@ -21,9 +10,9 @@ export default function Index() {
 
   const [bannerVisibility, setBannerVisibility] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
-  const { height: screenHeight, width: screenWidth } = useWindowDimensions();
+  const { isLoggedIn } = useAuthStore();
+  const {} = useReleasesStore();
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -55,7 +44,11 @@ export default function Index() {
           <Banner
             visible={bannerVisibility}
             icon={({ size }) => <Icon source="alert-box" size={size} />}
-            style={{ borderRadius: theme.roundness }}
+            style={{
+              display: bannerVisibility ? "flex" : "none",
+              borderRadius: theme.roundness,
+              marginTop: 8,
+            }}
             actions={[
               {
                 label: "Maybe later",
@@ -74,51 +67,10 @@ export default function Index() {
           </Banner>
         )}
       </View>
-
-      <Card mode="contained">
-        <Card.Cover
-          source={{
-            uri: "https://i.redd.it/chromakopia-in-color-v0-5xjvzebnsdwd1.jpg?width=1000&format=pjpg&auto=webp&s=b5417fe28b92eb6e5e6ee3b638c65bcac307e1b2",
-            cache: "force-cache",
-          }}
-          style={{
-            position: "absolute",
-            opacity: 0.6,
-            width: "100%",
-            height: "100%",
-          }}
-        />
-        <Card.Content
-          style={{
-            padding: 16,
-            backgroundColor: theme.colors.background.toString() + "CF",
-            gap: 8,
-          }}
-        >
-          <Image
-            style={{
-              height: screenHeight / 5,
-              aspectRatio: 1,
-              borderRadius: theme.roundness,
-            }}
-            src="https://i.redd.it/chromakopia-in-color-v0-5xjvzebnsdwd1.jpg?width=1000&format=pjpg&auto=webp&s=b5417fe28b92eb6e5e6ee3b638c65bcac307e1b2"
-          />
-          <View>
-            <Text
-              variant="headlineMedium"
-              style={{ color: theme.colors.onBackground, fontWeight: "bold" }}
-            >
-              CHROMAKOPIA
-            </Text>
-            <Text variant="bodySmall" style={{ color: theme.colors.outline }}>
-              Chromakopia is the eighth studio album by American rapper Tyler
-              the Creator . It was released through Columbia Records on October
-              28, 2024, serving as the follow-up to Call Me If You Get Lost
-              (2021).
-            </Text>
-          </View>
-        </Card.Content>
-      </Card>
+      <ScrollView
+        contentContainerStyle={{ gap: 16 }}
+        showsVerticalScrollIndicator={false}
+      ></ScrollView>
     </SafeAreaView>
   );
 }
