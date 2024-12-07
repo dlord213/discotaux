@@ -11,7 +11,6 @@ import {
   ActivityIndicator,
   Banner,
   Icon,
-  Searchbar,
   Text,
   useTheme,
 } from "react-native-paper";
@@ -97,30 +96,28 @@ export default function Index() {
         )}
       </View>
       {!isFetching ? (
-        <>
-          <FlatList
-            refreshControl={
-              <RefreshControl
-                refreshing={isRefetching}
-                onRefresh={async () => {
-                  await AsyncStorage.removeItem(CACHE_KEY);
-                  refetch();
-                }}
-              />
-            }
-            data={data?.albumData.albums.items || []}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <MusicCard
-                image_url={item.images[0].url}
-                title={item.name}
-                description={item.artists[0].name}
-              />
-            )}
-            ListEmptyComponent={<Text>No data available</Text>}
-            contentContainerStyle={{ gap: 8 }}
-          />
-        </>
+        <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefetching}
+              onRefresh={async () => {
+                await AsyncStorage.removeItem(CACHE_KEY);
+                refetch();
+              }}
+            />
+          }
+          data={data?.albumData.albums.items || []}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <MusicCard
+              image_url={item.images[0].url}
+              title={item.name}
+              description={item.artists[0].name}
+            />
+          )}
+          ListEmptyComponent={<Text>No data available</Text>}
+          contentContainerStyle={{ gap: 8 }}
+        />
       ) : (
         <View
           style={{

@@ -6,12 +6,14 @@ interface ReleaseCardProps {
   image_url: string;
   title: string;
   description?: string | null;
+  onPress: () => void;
 }
 
 export default function MusicCard({
   image_url,
   title,
   description,
+  onPress
 }: ReleaseCardProps) {
   const theme = useTheme();
   const { height: screenHeight } = useWindowDimensions();
@@ -27,6 +29,7 @@ export default function MusicCard({
           opacity: pressed ? 0.9 : 1,
         },
       ]}
+      onPress={onPress}
     >
       <Card mode="contained">
         <Card.Cover

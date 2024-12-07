@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import {
   Chip,
   Searchbar,
@@ -102,7 +101,7 @@ export default function Page() {
         </Chip>
       </View>
       {mode == 0 ? (
-        albumData ? (
+        !albumFetching ? (
           <FlatList
             data={albumData?.albumData.albums.items || []}
             keyExtractor={(item, index) => index.toString()}
@@ -111,9 +110,9 @@ export default function Page() {
                 image_url={item.images[0].url}
                 title={item.name}
                 description={item.artists[0].name}
+                onPress={() => {console.log(item)}}
               />
             )}
-            ListEmptyComponent={<Text>No data available</Text>}
             contentContainerStyle={{ gap: 8 }}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
@@ -123,7 +122,7 @@ export default function Page() {
         ) : null
       ) : null}
       {mode == 1 ? (
-        trackData ? (
+        !trackFetching ? (
           <FlatList
             data={trackData?.trackData.tracks.items || []}
             keyExtractor={(item, index) => index.toString()}
@@ -134,7 +133,6 @@ export default function Page() {
                 description={item.artists[0].name}
               />
             )}
-            ListEmptyComponent={<Text>No data available</Text>}
             contentContainerStyle={{ gap: 8 }}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
@@ -151,7 +149,6 @@ export default function Page() {
             renderItem={({ item }) => (
               <MusicCard title={item.name} image_url={item.images?.[0]?.url} />
             )}
-            ListEmptyComponent={<Text>No data available</Text>}
             contentContainerStyle={{ gap: 8 }}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
