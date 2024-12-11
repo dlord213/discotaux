@@ -16,7 +16,7 @@ import {
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import * as NavigationBar from "expo-navigation-bar";
 
 import useAuthStore from "@/stores/useAuthStore";
@@ -31,7 +31,7 @@ export default function Index() {
   const { isLoggedIn } = useAuthStore();
   const { CACHE_KEY, getNewAlbumReleases } = useReleasesStore();
 
-  const { isPending, data, error, isFetching, isRefetching, refetch } =
+  const { data, isFetching, isRefetching, refetch } =
     useQuery({
       queryKey: ["new-releases"],
       queryFn: getNewAlbumReleases,
@@ -113,6 +113,7 @@ export default function Index() {
               image_url={item.images[0].url}
               title={item.name}
               description={item.artists[0].name}
+              onPress={() => router.push({ pathname: "/album/[id]", params: { id: item.id } })}
             />
           )}
           ListEmptyComponent={<Text>No data available</Text>}

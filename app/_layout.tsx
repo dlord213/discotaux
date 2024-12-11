@@ -62,9 +62,8 @@ export default function RootLayout() {
             tabBar={({ navigation, state, descriptors, insets }) => {
               const filteredRoutes = state.routes.filter(
                 (route) =>
-                  route.name !== "_sitemap" && route.name !== "+not-found"
+                  route.name !== "_sitemap" && route.name !== "+not-found" && route.name !== "album/[id]"
               );
-
               return (
                 <BottomNavigation.Bar
                   shifting

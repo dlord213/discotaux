@@ -13,6 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import MusicCard from "@/components/MusicCard";
 import useReleasesStore from "@/stores/useReleasesStore";
 import useSearchStore from "@/stores/useSearchStore";
+import { router } from "expo-router";
 
 export default function Page() {
   const theme = useTheme();
@@ -110,7 +111,7 @@ export default function Page() {
                 image_url={item.images[0].url}
                 title={item.name}
                 description={item.artists[0].name}
-                onPress={() => {console.log(item)}}
+                onPress={() => { router.push({ pathname: "/album/[id]", params: { id: item.id } }) }}
               />
             )}
             contentContainerStyle={{ gap: 8 }}
