@@ -18,6 +18,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 import useReleasesStore from "@/stores/useReleasesStore";
+import useAlbumStore from "@/stores/useAlbumStore";
 
 export default function Page() {
   const theme = useTheme();
@@ -25,6 +26,7 @@ export default function Page() {
   const { height: screenHeight } = useWindowDimensions();
 
   const { SPOTIFY_TOKEN } = useReleasesStore();
+  const { getAlbumData, formatTime } = useAlbumStore();
 
   const [mode, setMode] = useState(1);
 
@@ -38,56 +40,18 @@ export default function Page() {
     }, [theme.dark])
   );
 
-  const getAlbumData = async () => {
-    try {
-      const albumDataResponse = await axios.get(
-        "https://api.spotify.com/v1/albums/" + id,
-        {
-          headers: {
-            Authorization: "Bearer " + SPOTIFY_TOKEN,
-          },
-        }
-      );
-
-      const albumTracksDataResponse = await axios.get(
-        `https://api.spotify.com/v1/albums/` + id + `/tracks`,
-        {
-          headers: {
-            Authorization: "Bearer " + SPOTIFY_TOKEN,
-          },
-        }
-      );
-
-      return {
-        albumData: albumDataResponse.data,
-        albumTracks: albumTracksDataResponse.data,
-      };
-    } catch (err) {
-      console.log(err);
-      throw err;
-    }
-  };
-
   const { data: albumData, isFetching: isAlbumDataFetching } = useQuery({
-    queryFn: getAlbumData,
+    queryFn: () => getAlbumData(id, SPOTIFY_TOKEN),
     queryKey: [id],
   });
 
-  function formatDurationToMinutesAndSeconds(durationMs: number): string {
-    const totalSeconds = Math.floor(durationMs / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-  }
-
-  if (!isAlbumDataFetching) {
+  if (!isAlbumDataFetching)
     return (
       <SafeAreaView style={styles.safeAreaView}>
         <Card mode="contained">
           <Card.Cover
             source={{
-              uri: albumData?.albumData.images[0].url || "",
+              uri: albumData?.images[0].url || "",
               cache: "force-cache",
             }}
             style={{
@@ -108,7 +72,7 @@ export default function Page() {
               variant="headlineSmall"
               style={{ color: theme.colors.onBackground, fontWeight: "bold" }}
             >
-              {albumData?.albumData.name}
+              {albumData?.name}
             </Text>
             <Text
               variant="bodyMedium"
@@ -118,7 +82,7 @@ export default function Page() {
                 fontWeight: "bold",
               }}
             >
-              {albumData?.albumData.artists[0].name}
+              {albumData?.artists[0].name}
             </Text>
           </Card.Content>
         </Card>
@@ -144,7 +108,7 @@ export default function Page() {
         </View>
         {mode == 0 ? null : (
           <FlatList
-            data={albumData?.albumTracks.items}
+            data={albumData?.tracks.items}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <View
@@ -159,15 +123,21 @@ export default function Page() {
                   {item.track_number}
                 </Text>
                 <Card mode="contained" style={{ flex: 12 }}>
-                  <Card.Content
-                    style={{
-                    }}
-                  >
-                    <Text variant="titleMedium" style={{ fontWeight: "bold", color: theme.colors.onSurface }}>
+                  <Card.Content style={{}}>
+                    <Text
+                      variant="titleMedium"
+                      style={{
+                        fontWeight: "bold",
+                        color: theme.colors.onSurface,
+                      }}
+                    >
                       {item.name}
                     </Text>
-                    <Text variant="titleSmall" style={{color: theme.colors.onSurfaceVariant}}>
-                      {formatDurationToMinutesAndSeconds(item.duration_ms)}
+                    <Text
+                      variant="titleSmall"
+                      style={{ color: theme.colors.onSurfaceVariant }}
+                    >
+                      {formatTime(item.duration_ms)}
                     </Text>
                   </Card.Content>
                 </Card>
@@ -178,7 +148,6 @@ export default function Page() {
         )}
       </SafeAreaView>
     );
-  }
 
   return (
     <SafeAreaView

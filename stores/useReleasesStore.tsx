@@ -58,12 +58,12 @@ const useReleasesStore = create<ReleasesStoreInterface>()(
           return cachedAlbumData;
         } catch (err) {
           console.log("Error:", err);
-          throw err
+          throw err;
         }
       }
     },
     getSpotifyAccessToken: async () => {
-      const CLIENT_ID = "f13cff03612143d78b4fd6d1bebd6d0a"
+      const CLIENT_ID = "f13cff03612143d78b4fd6d1bebd6d0a";
       const CLIENT_SECRET = "0b824f953bd24a3d89c0f7cb73fee27f";
 
       const cachedTokenData = await AsyncStorage.getItem(
