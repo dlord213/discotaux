@@ -3,11 +3,9 @@ import {
   Chip,
   Searchbar,
   useTheme,
-  Text,
   ActivityIndicator,
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useQuery } from "@tanstack/react-query";
 
 import MusicCard from "@/components/MusicCard";
@@ -104,14 +102,19 @@ export default function Page() {
       {mode == 0 ? (
         !albumFetching ? (
           <FlatList
-            data={albumData?.albumData.albums.items || []}
+            data={albumData?.items || []}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
               <MusicCard
                 image_url={item.images[0].url}
                 title={item.name}
                 description={item.artists[0].name}
-                onPress={() => { router.push({ pathname: "/album/[id]", params: { id: item.id } }) }}
+                onPress={() => {
+                  router.push({
+                    pathname: "/album/[id]",
+                    params: { id: item.id },
+                  });
+                }}
               />
             )}
             contentContainerStyle={{ gap: 8 }}
@@ -125,7 +128,7 @@ export default function Page() {
       {mode == 1 ? (
         !trackFetching ? (
           <FlatList
-            data={trackData?.trackData.tracks.items || []}
+            data={trackData?.items || []}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
               <MusicCard
@@ -143,9 +146,9 @@ export default function Page() {
         ) : null
       ) : null}
       {mode === 2 ? (
-        artistData?.artistData?.artists?.items ? (
+        !artistFetching ? (
           <FlatList
-            data={artistData.artistData.artists.items || []}
+            data={artistData?.items || []}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <MusicCard title={item.name} image_url={item.images?.[0]?.url} />

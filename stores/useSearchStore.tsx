@@ -1,7 +1,7 @@
 import {
-  SpotifyAlbumDataInterface,
-  SpotifyArtistDataInterface,
-  SpotifyTrackDataInterface,
+  SpotifySearchAlbumInterface,
+  SpotifySearchArtistsInterface,
+  SpotifySearchTracksInterface,
 } from "@/types/SpotifyAPITypes";
 import axios from "axios";
 import { create } from "zustand";
@@ -14,13 +14,13 @@ interface SearchStoreInterface {
   setMode: (val: number) => void;
   searchAlbum: (
     access_token: string
-  ) => Promise<SpotifyAlbumDataInterface | undefined> | Promise<unknown>;
+  ) => Promise<SpotifySearchAlbumInterface | undefined>;
   searchTrack: (
     access_token: string
-  ) => Promise<SpotifyTrackDataInterface | undefined> | Promise<unknown>;
+  ) => Promise<SpotifySearchTracksInterface | undefined>;
   searchArtist: (
     access_token: string
-  ) => Promise<SpotifyArtistDataInterface | undefined> | Promise<unknown>;
+  ) => Promise<SpotifySearchArtistsInterface | undefined>;
 }
 
 const useSearchStore = create<SearchStoreInterface>()(
@@ -32,60 +32,54 @@ const useSearchStore = create<SearchStoreInterface>()(
     searchAlbum: async (access_token: string) => {
       if (get().mode == 0) {
         try {
-          const response = await axios.get<
-            SpotifyAlbumDataInterface["albumData"]
-          >(`https://api.spotify.com/v1/search?q=${get().query}&type=album`, {
-            headers: { Authorization: "Bearer " + access_token },
-          });
+          const response = await axios.get<SpotifySearchAlbumInterface>(
+            `https://api.spotify.com/v1/search?q=${get().query}&type=album`,
+            {
+              headers: { Authorization: "Bearer " + access_token },
+            }
+          );
 
-          const albumData: SpotifyAlbumDataInterface = {
-            albumData: response.data,
-            lastQueryTimestamp: new Date().toLocaleDateString(),
-          };
+          const albumData: SpotifySearchAlbumInterface = response.data;
 
           return albumData;
         } catch (err) {
-          return err;
+          throw err;
         }
       }
     },
     searchTrack: async (access_token: string) => {
       if (get().mode == 1) {
         try {
-          const response = await axios.get<
-            SpotifyTrackDataInterface["trackData"]
-          >(`https://api.spotify.com/v1/search?q=${get().query}&type=track`, {
-            headers: { Authorization: "Bearer " + access_token },
-          });
+          const response = await axios.get<SpotifySearchTracksInterface>(
+            `https://api.spotify.com/v1/search?q=${get().query}&type=track`,
+            {
+              headers: { Authorization: "Bearer " + access_token },
+            }
+          );
 
-          const trackData: SpotifyTrackDataInterface = {
-            trackData: response.data,
-            lastQueryTimestamp: new Date().toLocaleDateString(),
-          };
+          const trackData: SpotifySearchTracksInterface = response.data;
 
           return trackData;
         } catch (err) {
-          return err;
+          throw err;
         }
       }
     },
     searchArtist: async (access_token: string) => {
       if (get().mode == 2) {
         try {
-          const response = await axios.get<
-            SpotifyArtistDataInterface["artistData"]
-          >(`https://api.spotify.com/v1/search?q=${get().query}&type=artist`, {
-            headers: { Authorization: "Bearer " + access_token },
-          });
+          const response = await axios.get<SpotifySearchArtistsInterface>(
+            `https://api.spotify.com/v1/search?q=${get().query}&type=artist`,
+            {
+              headers: { Authorization: "Bearer " + access_token },
+            }
+          );
 
-          const artistData: SpotifyArtistDataInterface = {
-            artistData: response.data,
-            lastQueryTimestamp: new Date().toLocaleDateString(),
-          };
+          const artistData: SpotifySearchArtistsInterface = response.data;
 
           return artistData;
         } catch (err) {
-          return err;
+          throw err;
         }
       }
     },

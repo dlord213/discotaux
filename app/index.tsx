@@ -106,7 +106,7 @@ export default function Index() {
               }}
             />
           }
-          data={data?.albumData.albums.items || []}
+          data={data?.albums.items || []}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <MusicCard

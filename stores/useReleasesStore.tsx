@@ -3,13 +3,13 @@ import axios from "axios";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
-import { SpotifyAlbumDataInterface } from "@/types/SpotifyAPITypes";
+import { SpotifyNewReleasesInterface } from "@/types/SpotifyAPITypes";
 
 interface ReleasesStoreInterface {
   CACHE_KEY: string;
   SPOTIFY_TOKEN_KEY: string;
   SPOTIFY_TOKEN: string;
-  getNewAlbumReleases: () => Promise<SpotifyAlbumDataInterface | undefined>;
+  getNewAlbumReleases: () => Promise<SpotifyNewReleasesInterface | undefined>;
   getSpotifyAccessToken: () => Promise<string>;
 }
 
@@ -25,7 +25,7 @@ const useReleasesStore = create<ReleasesStoreInterface>()(
         try {
           const cachedAlbumData = await AsyncStorage.getItem(get().CACHE_KEY);
           if (cachedAlbumData) {
-            const parsedCachedAlbumData: SpotifyAlbumDataInterface =
+            const parsedCachedAlbumData: SpotifyNewReleasesInterface =
               JSON.parse(cachedAlbumData);
 
             return parsedCachedAlbumData;
@@ -35,25 +35,21 @@ const useReleasesStore = create<ReleasesStoreInterface>()(
         }
 
         try {
-          const response = await axios.get<
-            SpotifyAlbumDataInterface["albumData"]
-          >("https://api.spotify.com/v1/browse/new-releases?limit=50", {
-            headers: {
-              Authorization: "Bearer " + access_token,
-            },
-          });
+          const response = await axios.get<SpotifyNewReleasesInterface>(
+            "https://api.spotify.com/v1/browse/new-releases?limit=50",
+            {
+              headers: {
+                Authorization: "Bearer " + access_token,
+              },
+            }
+          );
 
-          const cachedAlbumData: SpotifyAlbumDataInterface = {
-            albumData: response.data,
-            lastUpdated: new Date().toLocaleDateString(),
-          };
+          const cachedAlbumData: SpotifyNewReleasesInterface = response.data;
 
           await AsyncStorage.setItem(
             "@releases-albums-data",
             JSON.stringify(cachedAlbumData)
           );
-
-          console.log(cachedAlbumData);
 
           return cachedAlbumData;
         } catch (err) {
