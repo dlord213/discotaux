@@ -107,14 +107,14 @@ export interface SpotifyTrackObject {
 
 export interface SpotifyArtistObject {
   followers: { href: string; total: number };
-  genres: string[]
-  href: string
-  id: string
-  images: SpotifyImageObject[]
-  name: string
-  popularity: number
-  type: "artist"
-  uri: string
+  genres: string[];
+  href: string;
+  id: string;
+  images: SpotifyImageObject[];
+  name: string;
+  popularity: number;
+  type: "artist";
+  uri: string;
 }
 
 export interface SpotifyAlbumTracksDataInterface {
@@ -140,31 +140,37 @@ export interface SpotifyNewReleasesInterface {
 }
 
 export interface SpotifySearchAlbumInterface {
-  href: string;
-  limit: number;
-  next: string;
-  offset: number;
-  previous: string;
-  total: number;
-  items: SpotifySimplifiedAlbumObjectInterface[];
+  albums: {
+    href: string;
+    limit: number;
+    next: string;
+    offset: number;
+    previous: string;
+    total: number;
+    items: SpotifySimplifiedAlbumObjectInterface[];
+  };
 }
 
 export interface SpotifySearchTracksInterface {
-  href: string;
-  limit: number;
-  next: string;
-  offset: number;
-  previous: string;
-  total: number;
-  items: SpotifyTrackObject[];
+  tracks: {
+    href: string;
+    limit: number;
+    next: string;
+    offset: number;
+    previous: string;
+    total: number;
+    items: SpotifyTrackObject[];
+  };
 }
 
 export interface SpotifySearchArtistsInterface {
-  href: string;
-  limit: number;
-  next: string;
-  offset: number;
-  previous: string;
-  total: number;
-  items: SpotifyArtistObject[];
+  artists: {
+    href: string;
+    limit: number;
+    next: string;
+    offset: number;
+    previous: string;
+    total: number;
+    items: SpotifyArtistObject[];
+  };
 }

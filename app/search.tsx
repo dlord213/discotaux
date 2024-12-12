@@ -102,7 +102,7 @@ export default function Page() {
       {mode == 0 ? (
         !albumFetching ? (
           <FlatList
-            data={albumData?.items || []}
+            data={albumData?.albums.items || []}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
               <MusicCard
@@ -128,7 +128,7 @@ export default function Page() {
       {mode == 1 ? (
         !trackFetching ? (
           <FlatList
-            data={trackData?.items || []}
+            data={trackData?.tracks.items || []}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
               <MusicCard
@@ -148,7 +148,7 @@ export default function Page() {
       {mode === 2 ? (
         !artistFetching ? (
           <FlatList
-            data={artistData?.items || []}
+            data={artistData?.artists.items || []}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <MusicCard title={item.name} image_url={item.images?.[0]?.url} />

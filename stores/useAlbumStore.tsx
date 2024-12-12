@@ -1,7 +1,4 @@
-import {
-  SpotifyAlbumTracksDataInterface,
-  SpotifyGetAlbumDataInterface,
-} from "@/types/SpotifyAPITypes";
+import { SpotifyGetAlbumDataInterface } from "@/types/SpotifyAPITypes";
 import axios from "axios";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
@@ -18,15 +15,14 @@ const useAlbumStore = create<AlbumStoreInterface>()(
   immer((set, get) => ({
     getAlbumData: async (id: string, token: string) => {
       try {
-        const albumDataResponse =
-          await axios.get<SpotifyGetAlbumDataInterface>(
-            "https://api.spotify.com/v1/albums/" + id,
-            {
-              headers: {
-                Authorization: "Bearer " + token,
-              },
-            }
-          );
+        const albumDataResponse = await axios.get<SpotifyGetAlbumDataInterface>(
+          "https://api.spotify.com/v1/albums/" + id,
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        );
 
         return albumDataResponse.data;
       } catch (err) {

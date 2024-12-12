@@ -41,6 +41,8 @@ const useSearchStore = create<SearchStoreInterface>()(
 
           const albumData: SpotifySearchAlbumInterface = response.data;
 
+          console.log(albumData);
+
           return albumData;
         } catch (err) {
           throw err;
